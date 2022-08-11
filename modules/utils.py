@@ -23,3 +23,15 @@ def get_peaks(df,feature:str, prominence:int) -> tuple:
     df_top['fecha'] =listd
     df_top['top'] =listv 
     return df_top
+
+def tableTransform(dfr4, df_map):
+    dfr4.rename(columns={'Estado':'ticker'}, inplace=True)
+    dfr4.sort_values('ticker',inplace=True)
+    dfr4.reset_index(drop=True,inplace=True)
+    df_map.sort_values('ticker', inplace=True)
+    df_map.reset_index(drop=True,inplace=True)
+    df_newmap =df_map.merge(dfr4, on='ticker', how='left')
+    df_newmap.drop('ticker', axis=1,inplace=True)
+    df_newmap.sort_values('Total', ascending=False, inplace=True)
+    df_newmap.reset_index(drop=True,inplace=True)
+    return df_newmap.head(5)

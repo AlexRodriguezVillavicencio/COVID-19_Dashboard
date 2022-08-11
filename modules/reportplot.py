@@ -5,23 +5,22 @@ def linealPlot(df_new):
     fig= go.Figure(data=[
         go.Scatter(
         x=df_new['date'],
-        y=df_new['total_adultos_en_cama_con_covid'],
+        y=df_new['adultos_cama_covid'],
         mode='lines', 
         name='Adultos con Covid',
         line=dict(color='cyan')
-        # visible='legendonly'
         ),
         go.Scatter(
         x=df_new['date'],
-        y=df_new['total_pediatricos_en_cama_con_covid'],
+        y=df_new['menores_cama_covid'],
         mode='lines',
         name='Menores de Edad con Covid'
         ),
     ])
     fig.update_layout(
-        width=800,
-        plot_bgcolor='#111111',
-        paper_bgcolor= '#111111',
+        height=300,
+        plot_bgcolor='black',
+        paper_bgcolor= 'black',
         font_color='#cee3e1',
         legend=dict(
             x=0.05,
@@ -80,9 +79,52 @@ def lineal2Plot(df_NY,dft_adultos,dft_menores):
         ),
     ])
     fig.update_layout(
-        width=800,
-        plot_bgcolor='#111111',
-        paper_bgcolor= '#111111',
+        # title=name_title,
+        height=300,
+        plot_bgcolor='black',
+        paper_bgcolor= 'black',
+        font_color='#cee3e1',
+        legend=dict(
+            x=0.05,
+            y=1,
+            title_font_family="Times New Roman",
+            font=dict(
+                family="Courier",
+                size=12,
+                color="LightSteelBlue"
+            ),
+            bgcolor="Black",
+            bordercolor="LightSteelBlue",
+            borderwidth=1
+        ),
+        xaxis=dict(showgrid=False,showline=True,linecolor='rgb(255,255,255)'),
+        yaxis=dict(showgrid=False),
+        margin=dict(l=10,r=10,b=10,t=10)
+    )
+    return fig
+
+
+def lineal3Plot(df_new):
+    fig= go.Figure(data=[
+        go.Scatter(
+        x=df_new['date'],
+        y=df_new['Muertes covid'],
+        mode='lines', 
+        name='Muertes covid',
+        line=dict(color='cyan')
+        ),
+        go.Scatter(
+        x=df_new['date'],
+        y=df_new['Personal Ausente'],
+        mode='lines',
+        name='Personal Ausente'
+        ),
+    ])
+    fig.update_layout(
+        # title=name_title,
+        height=300,
+        plot_bgcolor='black',
+        paper_bgcolor= 'black',
         font_color='#cee3e1',
         legend=dict(
             x=0.05,
@@ -107,12 +149,12 @@ def lineal2Plot(df_NY,dft_adultos,dft_menores):
 def piePlot(labels,values,ta):
     fig = go.Figure()
     fig.add_trace(go.Pie(labels=labels, values=values, hole=.4))
-    fig.update_traces(marker=dict(colors=['royalblue', 'cyan']))
+    fig.update_traces(marker=dict(colors=['rgb(100, 255, 233)', 'cyan']))
     fig.update_layout(
-        width=1500,
-        paper_bgcolor= 'darkblue',
+        height=260,
+        paper_bgcolor= 'royalblue',
         font_color='#cee3e1',
-        margin=dict(l=10,r=10,b=10,t=10),
+        margin=dict(l=10,r=10,b=15,t=15),
         legend=dict(
             y=0.9,
             font=dict(
@@ -124,7 +166,7 @@ def piePlot(labels,values,ta):
             bordercolor="LightSteelBlue",
             borderwidth=1
         ))
-    fig.add_annotation(x=1.4, y=0.03,
+    fig.add_annotation(x=2, y=0.03,
         text= f'Total: {ta} casos',
         showarrow=False,
         bordercolor="LightSteelBlue",
@@ -139,21 +181,26 @@ def piePlot(labels,values,ta):
         ))
     return fig
 
-def tablePlot(df_head, df_body):
+def tablePlot(df_head,df_body):
     fig = go.Figure(data=[go.Table(
-        header=dict(values=df_head,
-                    line_color='cyan',
-                    fill_color='royalblue',
-                    align='left'),
+        columnwidth = [3,2],
+        header=dict(
+                    values=df_head,
+                    line_color='black',
+                    fill_color='black',
+                    align='left',
+                    font=dict(size=20)),
         cells=dict(values=df_body.T,
-                   line_color='cyan',
-                   fill_color='black',
-                   align='left'))
+                   line_color='black',
+                   fill_color='royalblue',
+                   align=['left','center'],
+                   height=30,
+                   font=dict(size=15),))
     ])
     fig.update_layout(
-        # width=550,
-        height=150,
-        paper_bgcolor= '#111111',
+        # width=50,
+        height=260,
+        # paper_bgcolor= 'royalblue',
         font_color='#cee3e1',
         margin=dict(l=10,r=10,b=10,t=10))
     return fig
@@ -183,7 +230,7 @@ def mapPlot(df_newmap):
     data = dict(type = 'choropleth', 
                 locations = df_newmap['ticker'], 
                 locationmode = 'USA-states', 
-                z = list(df_newmap['camas_pediatrico']), 
+                z = list(df_newmap['Muertes covid']), 
                 colorscale=[
                     [0, "rgb(243, 255, 250)"],
                     [0.10, "rgb(166, 255, 249)"],
@@ -197,9 +244,21 @@ def mapPlot(df_newmap):
 
     fig = go.Figure(data=[data], layout=layout)
     fig.update_layout(
-        width=800,
+        # title='Mapa de fallecidos por covid',
+        # width=800,
         margin=dict(l=5,r=5,b=5,t=5),
-        paper_bgcolor= '#111111',
+        paper_bgcolor= 'black',
         font_color='#cee3e1',
     )              
+    return fig
+
+def scatterPlot(dfr):
+    fig = px.scatter(dfr, x="Personal Ausente", y="Muertes covid", 
+            color="Muertes covid", template='plotly_dark',
+            color_continuous_scale=[
+                    [0.0, "rgb(132, 255, 233)"],
+                    [0.50, "rgb(100, 255, 233)"],
+                    [1, "rgb(0, 186, 186)"],
+                ])
+    fig.update_layout(height=300)
     return fig
